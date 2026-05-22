@@ -25,7 +25,22 @@ export const CreatePost=async(req,res)=>{
 
 export const getAllPosts = async(req,res)=>{
     
+try{
+    const posts = await Post.find().populate("user", "name email").sort({createdAt:-1});
+    return res.status(200).json({
+
+                success:true,
+                count:posts.length,
+                posts
+
+            })
+
+    
+
+     }catch(error){
+    return res.status(500).json({success:false,message:error.message})
 
 
 
-}
+}}
+
