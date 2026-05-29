@@ -57,7 +57,7 @@ if(!post){
 
 return res.status(404).json({
 success:false,
-message:"Post not found sorry!"
+message:"Post not found sorry"
 })
 
 }
