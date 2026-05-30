@@ -1,13 +1,13 @@
-import Post from "../models/Post";
+import Comment from "../models/Comment.js";
 
 export const addComment = async(req,res)=>{
 
 try{
-    const content= req.body;
-    const postId= req.params;
+    const {content}= req.body;
+    const {postId}= req.params;
 
     
-       const checkthepost=  await Post.find(postId);
+       const checkthepost=  await Post.findById(postId);
        if(!checkthepost)
           return res.status(404).message("post not found");
     
@@ -27,4 +27,20 @@ message:error.message
 
 }
 
+}
+
+export const getCommentsByPost= async(req,res)=>{
+    try{
+        const {postId}= req.params;
+        const postid= Post.findById(postId);
+
+        if(!postid)
+            return res.status(404).message("post not found");
+
+        
+
+    }
+    catch(error){
+        return res.status(404).message(error)
+    }
 }
