@@ -61,7 +61,7 @@ export const getCommentsByPost= async(req,res)=>{
         const comment = await Comment.findById(commentId);
 
      if(!comment){
-        return res.status(404).json({success:false,message:"Comment not found Sorry"});
+        return res.status(404).json({success:false,message:"Comment not found Sorry!"});
        }
 
 
