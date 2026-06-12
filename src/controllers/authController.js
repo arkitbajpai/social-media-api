@@ -51,7 +51,7 @@ export const login = async(req,res)=>{
         {
             return res.status(404).json({
                 success:false,
-                message:"uemail and password is requried sorry!"
+                message:"uemail and password is requried sorry"
             })
         }
         
