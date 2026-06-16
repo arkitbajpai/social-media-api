@@ -1,5 +1,5 @@
 
-import User from "../models/Use.js";
+import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 
 

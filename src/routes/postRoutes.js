@@ -1,10 +1,10 @@
 import express from "express";
-import protectedroutes from "../middleware/authMiddleware";
+import protectedroutes from "../middleware/authMiddleware.js";
 import { createPost,
 getAllPosts,
 getSinglePost,
 updatePost,
-deletePost } from "../controllers/postController";
+deletePost } from "../controllers/postController.js";
 
 const router=express.Router();
 router.post(
