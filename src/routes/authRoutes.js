@@ -5,8 +5,8 @@ import protectedroutes from "../middleware/authMiddleware.js";
 
 const authrouter = express.Router();
 
-router.post("/signup", signup);
-router.post("/login",login);
-router.get("/me", authrouter)
+authrouter.post("/signup", signup);
+authrouter.post("/login",login);
+authrouter.get("/me", authrouter)
 
 export default authrouter;

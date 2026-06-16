@@ -13,25 +13,25 @@ const router = express.Router();
 
 router.post(
   "/:postId",
-  auth,
+  protectedroutes,
   addComment
 );
 
 router.get(
   "/:postId",
-  auth,
+  protectedroutes,
   getCommentsByPost
 );
 
 router.put(
   "/:commentId",
-  auth,
+  protectedroutes,
   updateComment
 );
 
 router.delete(
   "/:commentId",
-  auth,
+  protectedroutes,
   deleteComment
 );
 

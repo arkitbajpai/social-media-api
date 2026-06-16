@@ -13,7 +13,7 @@ app.get("/",(req,res)=>{
     res.send("API Running");
 })
 
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", protectedroutes);
 
 app.use("/api/posts",postRoutes);
 app.use("/api/comments",commentRoutes);
