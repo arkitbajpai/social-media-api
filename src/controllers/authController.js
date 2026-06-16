@@ -15,7 +15,7 @@ export const signup= async(req, res)=>{
             message : "email or password required"
           })
          }
-         const existinguser= await User.findOne(email);
+         const existinguser= await User.findOne({email});
          if(existinguser){
             return res.status(400).json({
                  success:false, message:"User already exists"})
@@ -23,12 +23,11 @@ export const signup= async(req, res)=>{
 
          const salt= await bcrypt.genSalt(10);
          const hashPassword= await bcrypt.hash(password,salt);
-         const newuser= await User.create({name,
-                                        email,password:hashedPassword,gender });
+         const newuser= await User.create({name,email,password:hashPassword,gender });
                     return res.status(201).json({
                     success:true,
                     message:"User created successfully",
-                    user
+                    newuser
                 })
      
         }
@@ -46,7 +45,7 @@ export const signup= async(req, res)=>{
 export const login = async(req,res)=>{
      const {email, password}= req.body;
     try{
-       const checkuser = User.findOne(email)
+       const checkuser = await User.findOne({email})
         if(!email|| !password)
         {
             return res.status(404).json({

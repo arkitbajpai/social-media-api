@@ -7,7 +7,7 @@ const protectedroutes = async(req,res, next)=>{
        const token=req.cookies.jwt;
        if(!token)
        {
-        return res.status(401).res({
+        return res.status(401).json({
             message:"Unauthorized sorry!"
         })
        }
@@ -27,7 +27,7 @@ const protectedroutes = async(req,res, next)=>{
     }
 
     catch(error){
-        console.error("protectRoute error:", err);
+        console.error("protectRoute error:", error);
         res.status(500).json({message:"Internal server error in auth middleware"});
 
     }
