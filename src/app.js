@@ -13,9 +13,9 @@ const app = express();
 app.get("/",(req,res)=>{
     res.send("API Running");
 })
-
+app.use(express.json());
 app.use(cookieParser());
-app.use("/api/auth", protectedroutes);
+app.use("/api/auth", authrouter);
 
 app.use("/api/posts",postRoutes);
 app.use("/api/comments",commentRoutes);
