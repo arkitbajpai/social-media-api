@@ -14,7 +14,7 @@ const protectedroutes = async(req,res, next)=>{
 
       const decoded= jwt.verify(token,process.env.JWT_SECRET);
        if(!decoded){
-            return res.status(401).json({message:"Unauthorized"});
+            return res.status(401).json({message:"Unauthorized sorry!"});
         }
         const user = await User.findById(decoded.userId).select("-password");
         if(!user){
