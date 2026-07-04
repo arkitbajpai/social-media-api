@@ -46,7 +46,7 @@ export const getCommentsByPost= async(req,res)=>{
     }
     catch(error){
         return res.status(404).message(error)
-    }t
+    }
 } 
 
 

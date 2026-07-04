@@ -4,6 +4,7 @@ import protectedroutes from "./middleware/authMiddleware.js";
 import postRoutes from "./routes/postRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
 import cookieParser from "cookie-parser";
+import likeRoutes from "./routes/likeRoutes.js";
 
 const app = express();
 
@@ -19,6 +20,6 @@ app.use("/api/auth", authrouter);
 
 app.use("/api/posts",postRoutes);
 app.use("/api/comments",commentRoutes);
-
+app.use("/api/likes",likeRoutes);
 export default app;
 
