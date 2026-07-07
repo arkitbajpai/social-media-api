@@ -1,41 +1,36 @@
 import Friendship from "../models/Friendship.js";
 import User from "../models/User.js";
 
+// Send Friend Request
 export const sendFriendRequest = async (req, res) => {
   try {
+    const { userId } = req.params;
 
-    const sender = req.user._id;
-
-    const { userId: receiver } = req.params;
-
-    // User cannot send request to themselves
-    if (sender.toString() === receiver) {
+    if (req.user._id.toString() === userId) {
       return res.status(400).json({
         success: false,
         message: "You cannot send a friend request to yourself",
       });
     }
 
-    // Check receiver exists
-    const user = await User.findById(receiver);
+    const receiver = await User.findById(userId);
 
-    if (!user) {
+    if (!receiver) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
 
-    // Check if friendship/request already exists
     const existingRequest = await Friendship.findOne({
       $or: [
         {
-          sender,
-          receiver,
+          sender: req.user._id,
+          receiver: userId,
         },
         {
-          sender: receiver,
-          receiver: sender,
+          sender: userId,
+          receiver: req.user._id,
         },
       ],
     });
@@ -43,47 +38,58 @@ export const sendFriendRequest = async (req, res) => {
     if (existingRequest) {
       return res.status(400).json({
         success: false,
-        message: "Friend request already exists or you are already friend sorry",
+        message: "Friend request already exists",
       });
     }
 
-    // Create request
-    const friendship = await Friendship.create({
-      sender,
-      receiver,
+    const request = await Friendship.create({
+      sender: req.user._id,
+      receiver: userId,
     });
 
     return res.status(201).json({
       success: true,
-      message: "Friend request sent successfully",
-      friendship,
+      message: "Friend request sent",
+      request,
     });
-
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
 };
 
+// Accept Friend Request
 export const acceptFriendRequest = async (req, res) => {
   try {
-    // get request id
+    const { requestId } = req.params;
 
-    // find request
+    const request = await Friendship.findById(requestId);
 
-    // validate
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found",
+      });
+    }
 
-    // check receiver
+    if (request.receiver.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
 
-    // update status
+    request.status = "accepted";
 
-    // save
+    await request.save();
 
-    // return response
+    return res.status(200).json({
+      success: true,
+      message: "Friend request accepted",
+      request,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -92,17 +98,33 @@ export const acceptFriendRequest = async (req, res) => {
   }
 };
 
+// Reject Friend Request
 export const rejectFriendRequest = async (req, res) => {
   try {
-    // get request id
+    const { requestId } = req.params;
 
-    // find request
+    const request = await Friendship.findById(requestId);
 
-    // validate
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found",
+      });
+    }
 
-    // delete request
+    if (request.receiver.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
 
-    // return response
+    await request.deleteOne();
+
+    return res.status(200).json({
+      success: true,
+      message: "Friend request rejected",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -111,13 +133,19 @@ export const rejectFriendRequest = async (req, res) => {
   }
 };
 
+// Get Pending Requests
 export const getPendingRequests = async (req, res) => {
   try {
-    // find pending requests
+    const requests = await Friendship.find({
+      receiver: req.user._id,
+      status: "pending",
+    }).populate("sender", "name email");
 
-    // populate sender
-
-    // return response
+    return res.status(200).json({
+      success: true,
+      count: requests.length,
+      requests,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -126,13 +154,24 @@ export const getPendingRequests = async (req, res) => {
   }
 };
 
+// Get Friends
 export const getFriends = async (req, res) => {
   try {
-    // get all accepted friendships
+    const friends = await Friendship.find({
+      status: "accepted",
+      $or: [
+        { sender: req.user._id },
+        { receiver: req.user._id },
+      ],
+    })
+      .populate("sender", "name email")
+      .populate("receiver", "name email");
 
-    // populate sender & receiver
-
-    // return response
+    return res.status(200).json({
+      success: true,
+      count: friends.length,
+      friends,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -141,17 +180,39 @@ export const getFriends = async (req, res) => {
   }
 };
 
+// Remove Friend
 export const removeFriend = async (req, res) => {
   try {
-    // get friendship id
+    const { friendshipId } = req.params;
 
-    // find friendship
+    const friendship = await Friendship.findById(friendshipId);
 
-    // authorization
+    if (!friendship) {
+      return res.status(404).json({
+        success: false,
+        message: "Friendship not found",
+      });
+    }
 
-    // delete friendship
+    const isSender =
+      friendship.sender.toString() === req.user._id.toString();
 
-    // return response
+    const isReceiver =
+      friendship.receiver.toString() === req.user._id.toString();
+
+    if (!isSender && !isReceiver) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    await friendship.deleteOne();
+
+    return res.status(200).json({
+      success: true,
+      message: "Friend removed successfully",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
