@@ -6,6 +6,7 @@ import commentRoutes from "./routes/commentRoutes.js";
 import cookieParser from "cookie-parser";
 import likeRoutes from "./routes/likeRoutes.js";
 import friendRoutes from "./routes/friendRoutes.js";
+import otpRoutes from "./routes/otpRoutes.js";
 
 const app = express();
 
@@ -23,5 +24,6 @@ app.use("/api/posts",postRoutes);
 app.use("/api/comments",commentRoutes);
 app.use("/api/likes",likeRoutes);
 app.use("/api/friends", friendRoutes);
+app.use("/api/otp",otpRoutes);
 export default app;
 
