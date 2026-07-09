@@ -23,7 +23,7 @@ export const signup= async(req, res)=>{
 
          const salt= await bcrypt.genSalt(10);
          const hashPassword= await bcrypt.hash(password,salt);
-         const newuser= await User.create({name,email,password:hashPassword,gender });
+         const newuser= await User.create({name,email,password,gender });
                     return res.status(201).json({
                     success:true,
                     message:"User created successfully",
@@ -42,40 +42,62 @@ export const signup= async(req, res)=>{
      }
 }
 
-export const login = async(req,res)=>{
-     const {email, password}= req.body;
-    try{
-       const checkuser = await User.findOne({email})
-        if(!email|| !password)
-        {
-            return res.status(404).json({
-                success:false,
-                message:"uemail and password is requried sorry"
-            })
+export const login = async (req, res) => {
+    try {
+
+        const { email, password } = req.body;
+
+        // Validate Input
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required"
+            });
         }
-        
-        if(!checkuser)
-        {
+
+        // Check if user exists
+      const checkuser = await User.findOne({ email }).select("+password");
+
+        if (!checkuser) {
             return res.status(404).json({
-                    success:false,
-                    message:"user doesnot exists"
-                })
+                success: false,
+                message: "User does not exist"
+            });
         }
-      const isPasswordCorrect= await bcrypt.compare(password,user.password);
-       if(!isPasswordCorrect){
-        return res.status(400).json({message:"Invalid email or password"});
-      }
-        generateToken(user._id,res);
-        res.status(200).json({
-            message:"Login successful",
-            user:{  
-                email:User.email,
-                fullName:User.name,
+
+        // Compare Password
+    const isPasswordCorrect = await checkuser.comparePassword(password);
+        if (!isPasswordCorrect) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password"
+            });
+        }
+
+        // Generate JWT
+        const token = generateToken(checkuser._id, res);
+
+        return res.status(200).json({
+            success: true,
+            message: "Login successful",
+            token,
+            user: {
+                _id: checkuser._id,
+                name: checkuser.name,
+                email: checkuser.email,
+                gender: checkuser.gender,
+                avatar: checkuser.avatar
             }
         });
 
-    }catch(error){
-                 res.status(500).json({message:"Internal server error at login"});
+    } catch (error) {
+
+        console.log(error);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
 
     }
-}
+};

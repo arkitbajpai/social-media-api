@@ -2,7 +2,7 @@ import Otp from "../models/Otp.js";
 import User from "../models/User.js";
 import transporter from "../utils/sendMail.js";
 import otpGenerator from "otp-generator";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 export const sendOtp = async(req,res)=>{
 
