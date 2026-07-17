@@ -123,7 +123,7 @@ export const rejectFriendRequest = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Friend request rejected",
+      message: "Friend request rejected sorry",
     });
   } catch (error) {
     return res.status(500).json({
