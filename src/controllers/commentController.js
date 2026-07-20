@@ -1,4 +1,5 @@
 import Comment from "../models/Comment.js";
+import Post from "../models/Post.js";
 
 export const addComment = async(req,res)=>{
 
@@ -9,11 +10,17 @@ try{
     
        const checkthepost= await Post.findById(postId);
        if(!checkthepost)
-          return res.status(404).message("post not found");
+          return res.status(404).json({
+    success: false,
+    message: "Post not found"
+});
     
     await Comment.create({content,user:req.user._id,post:postId});
     
-    return res.status(202).message("postcreated");
+    return res.status(201).json({
+    success: true,
+    message: "Comment added successfully"
+});
 
 
 
